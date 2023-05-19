@@ -22,7 +22,7 @@ Heap :: distinct rawptr
 Arena_Id :: distinct c.int
 
 // block_visit_fun
-block_visit_proc :: #type proc "c" (
+Block_Visit_Proc :: #type proc "c" (
     heap: Heap,
     area: ^Heap_Area,
     block: rawptr,
@@ -31,11 +31,11 @@ block_visit_proc :: #type proc "c" (
 ) -> bool
 
 // deferred_free_fun
-deferred_free_proc :: #type proc "c" (force: bool, heartbeat: uint, arg: rawptr)
+Deferred_Free_Proc :: #type proc "c" (force: bool, heartbeat: uint, arg: rawptr)
 // output_fun
-output_proc :: #type proc "c" (msg: cstring, arg: rawptr)
+Output_Proc :: #type proc "c" (msg: cstring, arg: rawptr)
 // error_fun
-error_proc :: #type proc "c" (err: int, arg: rawptr)
+Error_Proc :: #type proc "c" (err: int, arg: rawptr)
 
 // heap_area_t
 // An area of heap space contains blocks of a single size.
@@ -99,21 +99,21 @@ foreign lib {
     // Internals
     // ------------------------------------------------------
 
-    register_deferred_free :: proc(deferred_free: deferred_free_proc, arg: rawptr) ---
-    register_output :: proc(out: output_proc, arg: rawptr) ---
-    register_error :: proc(fun: error_proc, arg: rawptr) ---
+    register_deferred_free :: proc(deferred_free: Deferred_Free_Proc, arg: rawptr) ---
+    register_output :: proc(out: Output_Proc, arg: rawptr) ---
+    register_error :: proc(fun: Error_Proc, arg: rawptr) ---
 
     collect :: proc(force: bool) ---
     version :: proc() -> int ---
     stats_reset :: proc() ---
     stats_merge :: proc() ---
     stats_print :: proc(out: rawptr = nil) --- // backward compatibility: `out` is ignored and should be NULL
-    stats_print_out :: proc(out: output_proc, arg: rawptr) ---
+    stats_print_out :: proc(out: Output_Proc, arg: rawptr) ---
 
     process_init :: proc() ---
     thread_init :: proc() ---
     thread_done :: proc() ---
-    thread_stats_print_out :: proc(out: output_proc, arg: rawptr) ---
+    thread_stats_print_out :: proc(out: Output_Proc, arg: rawptr) ---
 
     process_info :: proc(elapsed_msecs: ^uint, user_msecs: ^uint, system_msecs: ^uint, current_rss: ^uint, peak_rss: ^uint, current_commit: ^uint, peak_commit: ^uint, page_faults: ^uint) ---
 
@@ -203,7 +203,7 @@ foreign lib {
     heap_check_owned :: proc(heap: Heap, p: rawptr) -> bool ---
     check_owned :: proc(p: rawptr) -> bool ---
 
-    heap_visit_blocks :: proc(heap: Heap, visit_all_blocks: bool, visitor: block_visit_proc, arg: rawptr) -> bool ---
+    heap_visit_blocks :: proc(heap: Heap, visit_all_blocks: bool, visitor: Block_Visit_Proc, arg: rawptr) -> bool ---
 
     // Experimental
     is_in_heap_region :: proc(p: rawptr) -> bool ---
