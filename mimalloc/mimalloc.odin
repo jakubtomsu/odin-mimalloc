@@ -16,6 +16,7 @@ VERSION :: 212   // major + 2 digits minor
 SMALL_WSIZE_MAX :: 128
 SMALL_SIZE_MAX :: SMALL_WSIZE_MAX * size_of(rawptr)
 
+// heap_t pointer
 Heap :: distinct rawptr
 arena_id_t :: distinct c.int
 
@@ -165,6 +166,7 @@ realloc_aligned_at :: proc(p: rawptr, newsize: uint, alignment: uint, offset: ui
 // -------------------------------------------------------------------------------------
 
 heap_new :: proc() -> Heap ---
+// Safe delete a heap without freeing any still allocated blocks in that heap
 heap_delete :: proc(heap: Heap) ---
 heap_destroy :: proc(heap: Heap) ---
 heap_set_default :: proc(heap: Heap) -> Heap ---

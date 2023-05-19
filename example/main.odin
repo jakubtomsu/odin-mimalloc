@@ -19,4 +19,15 @@ main :: proc() {
 	fmt.println(b)
 
 	delete(b)
+
+	{
+		heap := mi.heap_new()
+		context.allocator = mi.heap_allocator(heap)
+
+		c: [dynamic]f32
+		for i in 0..<100 do append(&c, 1.0 / f32(i))
+		fmt.println(c)
+
+		defer mi.heap_destroy(heap)
+	}
 }
