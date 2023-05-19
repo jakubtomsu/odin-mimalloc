@@ -3,6 +3,8 @@ Odin bindngs for [mimalloc](https://github.com/microsoft/mimalloc)
 
 mimalloc (pronounced "me-malloc") is a general purpose allocator with excellent performance characteristics.
 
+WIP - only builds on windows and not all functions were tested.
+
 # Usage
 Simply copy the `mimalloc` folder somewhere into your project. Then you can just import it:
 ```odin
@@ -23,3 +25,4 @@ context.allocator = mi.heap_allocator(heap)
 mi.heap_destroy(heap)
 // Here you might want to restore the context.allocator
 ```
+
