@@ -4,6 +4,7 @@ Odin bindngs for [mimalloc](https://github.com/microsoft/mimalloc)
 mimalloc (pronounced "me-malloc") is a general purpose allocator with excellent performance characteristics.
 
 # Usage
+Simply copy the `mimalloc` folder somewhere into your project. Then you can just import it:
 ```odin
 import mi "mimalloc"
 ```
