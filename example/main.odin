@@ -30,4 +30,7 @@ main :: proc() {
 
 		defer mi.heap_destroy(heap)
 	}
+
+	// mi.stats_print()
+	mi.option_enable(.show_stats)
 }
