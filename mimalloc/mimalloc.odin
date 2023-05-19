@@ -72,13 +72,17 @@ heap_area_t :: struct {
   full_block_size: uint, // size in bytes of a full block including padding and metadata.
 }
 
-
-
 when ODIN_OS == .Windows {
 	when ODIN_DEBUG {
-		foreign import lib { "mimalloc_windows_x64_debug.lib" }
+		foreign import lib {
+      "mimalloc_windows_x64_debug.lib",
+      "system:Advapi32.lib",
+    }
 	} else {
-		foreign import lib { "mimalloc_windows_x64_release.lib" }
+		foreign import lib {
+      "mimalloc_windows_x64_release.lib",
+      "system:Advapi32.lib",
+    }
 	}
 } else {
 	#panic("OS currently not supported.")
@@ -250,6 +254,7 @@ heap_new_in_arena :: proc(arena_id: arena_id_t) -> 	Heap ---
 }
 
 // deprecated
+@(deprecated="reserve_huge_os_pages is deprecated.")
 reserve_huge_os_pages :: proc(pages: uint, max_secs: f64, pages_reserved: ^uint) -> int ---
 
 
