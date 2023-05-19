@@ -1,4 +1,4 @@
-# mimalloc-odin
+# odin-mimalloc
 Odin bindngs for [mimalloc](https://github.com/microsoft/mimalloc)
 
 mimalloc (pronounced "me-malloc") is a general purpose allocator with excellent performance characteristics.
