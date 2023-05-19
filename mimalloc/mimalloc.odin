@@ -11,7 +11,7 @@ import "core:c"
 
 #assert(size_of(uint) == size_of(c.size_t))
 
-VERSION :: 212   // major + 2 digits minor
+VERSION :: 212 // major + 2 digits minor
 
 SMALL_WSIZE_MAX :: 128
 SMALL_SIZE_MAX :: SMALL_WSIZE_MAX * size_of(rawptr)
@@ -22,7 +22,14 @@ Heap :: distinct rawptr
 Arena_Id :: distinct c.int
 
 // block_visit_fun
-block_visit_proc :: #type proc "c" (heap: Heap, area: ^Heap_Area, block: rawptr, block_size: uint, arg: rawptr) -> bool
+block_visit_proc :: #type proc "c" (
+    heap: Heap,
+    area: ^Heap_Area,
+    block: rawptr,
+    block_size: uint,
+    arg: rawptr,
+) -> bool
+
 // deferred_free_fun
 deferred_free_proc :: #type proc "c" (force: bool, heartbeat: uint, arg: rawptr)
 // output_fun
@@ -33,32 +40,26 @@ error_proc :: #type proc "c" (err: int, arg: rawptr)
 // heap_area_t
 // An area of heap space contains blocks of a single size.
 Heap_Area :: struct {
-    blocks: rawptr,// start of the area containing heap blocks
-    reserved: uint,    // bytes reserved for this area (virtual)
-    committed: uint,   // current available bytes for this area
-    used: uint,  // number of allocated blocks
-    block_size: uint,  // size in bytes of each block
+    blocks:          rawptr, // start of the area containing heap blocks
+    reserved:        uint, // bytes reserved for this area (virtual)
+    committed:       uint, // current available bytes for this area
+    used:            uint, // number of allocated blocks
+    block_size:      uint, // size in bytes of each block
     full_block_size: uint, // size in bytes of a full block including padding and metadata.
 }
 
 when ODIN_OS == .Windows {
-	when ODIN_DEBUG {
-		foreign import lib {
-            "mimalloc_windows_x64_debug.lib",
-            "system:Advapi32.lib",
-        }
-	} else {
-	    foreign import lib {
-            "mimalloc_windows_x64_release.lib",
-            "system:Advapi32.lib",
-        }
-	}
+    when ODIN_DEBUG {
+        foreign import lib {"mimalloc_windows_x64_debug.lib", "system:Advapi32.lib"}
+    } else {
+        foreign import lib {"mimalloc_windows_x64_release.lib", "system:Advapi32.lib"}
+    }
 } else when ODIN_OS == .Darwin {
     #panic("TODO")
 } else when ODIN_OS == .Linux {
     #panic("TODO")
 } else {
-	#panic("OS currently not supported.")
+    #panic("OS currently not supported.")
 }
 
 @(default_calling_convention = "c", link_prefix = "mi_")
@@ -103,10 +104,10 @@ foreign lib {
     register_error :: proc(fun: error_proc, arg: rawptr) ---
 
     collect :: proc(force: bool) ---
-    version :: proc() -> int---
+    version :: proc() -> int ---
     stats_reset :: proc() ---
     stats_merge :: proc() ---
-    stats_print :: proc(out: rawptr = nil) ---   // backward compatibility: `out` is ignored and should be NULL
+    stats_print :: proc(out: rawptr = nil) --- // backward compatibility: `out` is ignored and should be NULL
     stats_print_out :: proc(out: output_proc, arg: rawptr) ---
 
     process_init :: proc() ---
@@ -114,15 +115,7 @@ foreign lib {
     thread_done :: proc() ---
     thread_stats_print_out :: proc(out: output_proc, arg: rawptr) ---
 
-    process_info :: proc(
-        elapsed_msecs: ^uint,
-        user_msecs: ^uint,
-        system_msecs: ^uint,
-        current_rss: ^uint,
-        peak_rss: ^uint,
-        current_commit: ^uint,
-        peak_commit: ^uint,
-        page_faults: ^uint) ---
+    process_info :: proc(elapsed_msecs: ^uint, user_msecs: ^uint, system_msecs: ^uint, current_rss: ^uint, peak_rss: ^uint, current_commit: ^uint, peak_commit: ^uint, page_faults: ^uint) ---
 
 
     // -------------------------------------------------------------------------------------
@@ -219,7 +212,7 @@ foreign lib {
     reserve_huge_os_pages_interleave :: proc(pages: uint, numa_nodes: uint, timeout_msecs: uint) -> int ---
     reserve_huge_os_pages_at :: proc(pages: uint, numa_node: int, timeout_msecs: uint) -> int ---
 
-    reserve_os_memory :: proc(size: uint, commit: bool, allow_large: bool) -> int---
+    reserve_os_memory :: proc(size: uint, commit: bool, allow_large: bool) -> int ---
     manage_os_memory :: proc(start: rawptr, size: uint, is_committed: bool, is_large: bool, is_zero: bool, numa_node: int) -> bool ---
 
     debug_show_arenas :: proc() ---
@@ -228,15 +221,15 @@ foreign lib {
     arena_area :: proc(arena_id: Arena_Id, size: ^uint) -> rawptr ---
     reserve_huge_os_pages_at_ex :: proc(pages: uint, numa_node: int, timeout_msecs: uint, exclusive: bool, arena_id: ^Arena_Id) -> int ---
     reserve_os_memory_ex :: proc(size: uint, commit: bool, allow_large: bool, exclusive: bool, arena_id: ^Arena_Id) -> int ---
-    manage_os_memory_ex :: proc(start: rawptr, size: uint, is_committed: bool, is_large: bool, is_zero: bool, numa_node: int, exclusive: bool, arena_id: ^Arena_Id) -> bool---
+    manage_os_memory_ex :: proc(start: rawptr, size: uint, is_committed: bool, is_large: bool, is_zero: bool, numa_node: int, exclusive: bool, arena_id: ^Arena_Id) -> bool ---
 
     when VERSION >= 182 {
-    	// Create a heap that only allocates in the specified arena
-        heap_new_in_arena :: proc(arena_id: Arena_Id) -> 	Heap ---
+        // Create a heap that only allocates in the specified arena
+        heap_new_in_arena :: proc(arena_id: Arena_Id) -> Heap ---
     }
 
     // deprecated
-    @(deprecated="reserve_huge_os_pages is deprecated.")
+    @(deprecated = "reserve_huge_os_pages is deprecated.")
     reserve_huge_os_pages :: proc(pages: uint, max_secs: f64, pages_reserved: ^uint) -> int ---
 
 
@@ -260,32 +253,32 @@ foreign lib {
 // option_t
 Option :: enum c.int {
     // stable options
-    show_errors,                // print error messages
-    show_stats,                 // print statistics on termination
-    verbose,                    // print verbose messages
+    show_errors, // print error messages
+    show_stats, // print statistics on termination
+    verbose, // print verbose messages
 
     // the following options are experimental (see src/options.h)
-    eager_commit,               // eager commit segments? (after `eager_commit_delay` segments) (=1)
-    arena_eager_commit,         // eager commit arenas? Use 2 to enable just on overcommit systems (=2)
-    purge_decommits,            // should a memory purge decommit (or only reset) (=1)
-    allow_large_os_pages,       // allow large (2MiB) OS pages, implies eager commit
-    reserve_huge_os_pages,      // reserve N huge OS pages (1GiB/page) at startup
-    reserve_huge_os_pages_at,   // reserve huge OS pages at a specific NUMA node
-    reserve_os_memory,          // reserve specified amount of OS memory in an arena at startup
+    eager_commit, // eager commit segments? (after `eager_commit_delay` segments) (=1)
+    arena_eager_commit, // eager commit arenas? Use 2 to enable just on overcommit systems (=2)
+    purge_decommits, // should a memory purge decommit (or only reset) (=1)
+    allow_large_os_pages, // allow large (2MiB) OS pages, implies eager commit
+    reserve_huge_os_pages, // reserve N huge OS pages (1GiB/page) at startup
+    reserve_huge_os_pages_at, // reserve huge OS pages at a specific NUMA node
+    reserve_os_memory, // reserve specified amount of OS memory in an arena at startup
     deprecated_segment_cache,
     deprecated_page_reset,
-    abandoned_page_purge,       // immediately purge delayed purges on thread termination
+    abandoned_page_purge, // immediately purge delayed purges on thread termination
     deprecated_segment_reset,
     eager_commit_delay,
-    purge_delay,                // memory purging is delayed by N milli seconds use 0 for immediate purging or -1 for no purging at all.
-    use_numa_nodes,             // 0 = use all available numa nodes, otherwise use at most N nodes.
-    limit_os_alloc,             // 1 = do not use OS memory for allocation (but only programmatically reserved arenas)
-    os_tag,                     // tag used for OS logging (macOS only for now)
-    max_errors,                 // issue at most N error messages
-    max_warnings,               // issue at most N warning messages
+    purge_delay, // memory purging is delayed by N milli seconds use 0 for immediate purging or -1 for no purging at all.
+    use_numa_nodes, // 0 = use all available numa nodes, otherwise use at most N nodes.
+    limit_os_alloc, // 1 = do not use OS memory for allocation (but only programmatically reserved arenas)
+    os_tag, // tag used for OS logging (macOS only for now)
+    max_errors, // issue at most N error messages
+    max_warnings, // issue at most N warning messages
     max_segment_reclaim,
-    destroy_on_exit,            // if set, release all memory on exit sometimes used for dynamic unloading but can be unsafe.
-    arena_reserve,              // initial memory size in KiB for arena reservation (1GiB on 64-bit)
+    destroy_on_exit, // if set, release all memory on exit sometimes used for dynamic unloading but can be unsafe.
+    arena_reserve, // initial memory size in KiB for arena reservation (1GiB on 64-bit)
     arena_purge_mult,
     purge_extend_delay,
     _option_last,
