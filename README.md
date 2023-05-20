@@ -6,6 +6,8 @@ mimalloc (pronounced "me-malloc") is a general purpose allocator with excellent 
 WIP - only builds on windows and not all functions were tested.
 
 # Usage
+[Mimalloc API documentation](https://microsoft.github.io/mimalloc/)
+
 Simply copy the `mimalloc` folder somewhere into your project. Then you can just import it:
 ```odin
 import mi "mimalloc"
