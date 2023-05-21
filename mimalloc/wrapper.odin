@@ -33,7 +33,7 @@ global_allocator_proc :: proc(
     case .Query_Features:
         set := (^mem.Allocator_Mode_Set)(old_memory)
         if set != nil {
-            set^ = {.Alloc, .Alloc_Non_Zeroed, .Resize, .Query_Features}
+            set^ = {.Alloc, .Alloc_Non_Zeroed, .Free, .Resize, .Query_Features}
         }
         return nil, nil
 
@@ -84,7 +84,7 @@ heap_allocator_proc :: proc(
     case .Query_Features:
         set := (^mem.Allocator_Mode_Set)(old_memory)
         if set != nil {
-            set^ = {.Alloc, .Alloc_Non_Zeroed, .Resize, .Query_Features}
+            set^ = {.Alloc, .Alloc_Non_Zeroed, .Free, .Resize, .Query_Features}
         }
         return nil, nil
 
