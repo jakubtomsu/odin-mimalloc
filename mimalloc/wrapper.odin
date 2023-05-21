@@ -48,7 +48,7 @@ global_allocator_proc :: proc(
     return nil, nil
 }
 
-global_allocator :: proc "c" () -> mem.Allocator {
+global_allocator :: proc "contextless" () -> mem.Allocator {
     return {procedure = global_allocator_proc, data = nil}
 }
 
@@ -99,6 +99,6 @@ heap_allocator_proc :: proc(
     return nil, nil
 }
 
-heap_allocator :: proc "c" (heap: Heap) -> mem.Allocator {
+heap_allocator :: proc "contextless" (heap: Heap) -> mem.Allocator {
     return {procedure = heap_allocator_proc, data = heap}
 }
