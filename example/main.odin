@@ -4,33 +4,33 @@ import "core:fmt"
 import mi "../mimalloc"
 
 main :: proc() {
-	fmt.println("Hello")
+    fmt.println("Hello")
 
-	a := mi.malloc(16)
-	fmt.println(a)
-	a = mi.realloc(a, 1000)
-	fmt.println(a)
-	mi.free(a)
+    a := mi.malloc(16)
+    fmt.println(a)
+    a = mi.realloc(a, 1000)
+    fmt.println(a)
+    mi.free(a)
 
-	context.allocator = mi.global_allocator()
-	b: [dynamic]int
+    context.allocator = mi.global_allocator()
+    b: [dynamic]int
 
-	for i in 0..<20 do append(&b, i)
-	fmt.println(b)
+    for i in 0 ..< 20 do append(&b, i)
+    fmt.println(b)
 
-	delete(b)
+    delete(b)
 
-	{
-		heap := mi.heap_new()
-		context.allocator = mi.heap_allocator(heap)
+    {
+        heap := mi.heap_new()
+        defer mi.heap_destroy(heap)
 
-		c: [dynamic]f32
-		for i in 0..<100 do append(&c, 1.0 / f32(i))
-		fmt.println(c)
+        context.allocator = mi.heap_allocator(heap)
 
-		defer mi.heap_destroy(heap)
-	}
+        c: [dynamic]f32
+        for i in 0 ..< 100 do append(&c, 1.0 / f32(i))
+        fmt.println(c)
+    }
 
-	// mi.stats_print()
-	mi.option_enable(.show_stats)
+    // mi.stats_print()
+    mi.option_enable(.show_stats)
 }
